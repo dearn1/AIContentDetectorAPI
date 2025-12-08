@@ -1,0 +1,35 @@
+### Health Check
+GET http://localhost:8000/api/v1/health
+
+### Get Pricing
+GET http://localhost:8000/api/v1/pricing
+
+### Detect AI Content - AI-Generated Text
+POST http://localhost:8000/api/v1/detect
+Content-Type: application/json
+
+{
+  "text": "In today's digital age, it is important to note that artificial intelligence has revolutionized content creation. Furthermore, machine learning algorithms continue to evolve. Moreover, these advancements are significant.",
+  "api_key": "test_key_12345"
+}
+
+### Detect AI Content - Human Text
+POST http://localhost:8000/api/v1/detect
+Content-Type: application/json
+
+{
+  "text": "Just got back from the most amazing coffee shop! The barista was super friendly and made incredible latte art. Honestly, I've been trying to replicate it at home but failing miserably lol. Anyone got tips?",
+  "api_key": "test_key_12345"
+}
+
+### Batch Detection
+POST http://localhost:8000/api/v1/detect/batch
+Content-Type: application/json
+
+{
+  "texts": [
+    "In conclusion, the research demonstrates significant findings in the field of machine learning and artificial intelligence.",
+    "omg just saw the funniest thing at work today!! my boss accidentally sent a meme to the entire company 😂😂"
+  ],
+  "api_key": "test_key_12345"
+}

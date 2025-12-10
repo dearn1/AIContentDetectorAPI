@@ -1,10 +1,13 @@
 # main.py
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
+from fastapi.security import APIKeyHeader
+from typing import Optional
 
 from app.config import settings
 from app.routes import detection, info
+from app.security.api_auth import validate_api_key, rate_limit
 
 # Create FastAPI app
 app = FastAPI(

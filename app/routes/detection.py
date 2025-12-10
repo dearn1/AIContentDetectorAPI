@@ -1,5 +1,5 @@
 # app/routes/detection.py
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from datetime import datetime
 import hashlib
 
@@ -11,8 +11,9 @@ from app.models.schemas import (
     ErrorResponse
 )
 from app.utils.detector import AIContentDetector
+from app.security.api_auth import validate_api_key, rate_limit
 
-router = APIRouter(prefix="/detect", tags=["Detection"])
+router = APIRouter(prefix="/detect", tags=["Detection"], dependencies=[Depends(validate_api_key)])
 
 # Initialize detector
 detector = AIContentDetector()

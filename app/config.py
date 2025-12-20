@@ -29,6 +29,9 @@ class Settings(BaseSettings):
     RATE_LIMIT_STARTER: int = 10000
     RATE_LIMIT_PRO: int = 100000
 
+    # API Keys
+    API_KEYS: str = '[]'  # JSON string of API keys
+
     class Config:
         env_file = ".env"
         case_sensitive = True

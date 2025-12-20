@@ -1,0 +1,160 @@
+{
+  "info": {
+    "name": "AI Content Detector API",
+    "description": "Postman collection for AI Content Detector API - Detect AI-generated text with high accuracy",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/health",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "health"]
+        },
+        "description": "Check if the API is running and healthy"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Pricing",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/pricing",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "pricing"]
+        },
+        "description": "Retrieve pricing tiers and features"
+      },
+      "response": []
+    },
+    {
+      "name": "Detect AI Content",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{api_key}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"text\": \"In today's digital age, it is important to note that artificial intelligence has revolutionized content creation. With advanced algorithms and machine learning models, AI can now generate human-like text that is often indistinguishable from content written by humans. This technology has been widely adopted across various industries for tasks such as content generation, customer service, and data analysis.\",\n    \"api_key\": \"{{api_key}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/detect",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "detect"]
+        },
+        "description": "Analyze a single text to determine if it's AI-generated"
+      },
+      "response": []
+    },
+    {
+      "name": "Batch Detect AI Content",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{api_key}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"texts\": [\n        \"AI-generated text example 1...\",\n        \"Human-written text example 2...\"\n    ],\n    \"api_key\": \"{{api_key}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/detect/batch",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "detect", "batch"]
+        },
+        "description": "Analyze multiple texts to determine if they're AI-generated (max 10 per batch)"
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "value",
+        "value": "{{api_key}}",
+        "type": "string"
+      },
+      {
+        "key": "key",
+        "value": "X-API-Key",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string",
+      "description": "Base URL of the API"
+    },
+    {
+      "key": "api_key",
+      "value": "your_api_key_here",
+      "type": "string",
+      "description": "Your API key for authentication"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "// You can add pre-request scripts here if needed"
+        ],
+        "type": "text/javascript"
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "// You can add test scripts here",
+          "pm.test(\"Status code is 200\", function () {",
+          "    pm.response.to.have.status(200);",
+          "});"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ]
+}

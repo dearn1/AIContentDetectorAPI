@@ -11,9 +11,7 @@ from app.models.schemas import (
     ErrorResponse
 )
 from app.utils.detector import AIContentDetector
-from app.security.api_auth import validate_api_key, rate_limit
-
-router = APIRouter(prefix="/detect", tags=["Detection"], dependencies=[Depends(validate_api_key)])
+router = APIRouter(prefix="/detect", tags=["Detection"])
 
 # Initialize detector
 detector = AIContentDetector()
@@ -39,13 +37,6 @@ async def detect_ai_content(request: TextAnalysisRequest):
     - Detailed metrics
     """
     try:
-        # Validate API key (simplified - in production use proper auth)
-        if not request.api_key or len(request.api_key) < 10:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid API key"
-            )
-
         # Analyze text
         result = detector.analyze_text(request.text)
 
@@ -89,13 +80,6 @@ async def batch_detect(request: BatchAnalysisRequest):
     Returns analysis results for each text
     """
     try:
-        # Validate API key
-        if not request.api_key or len(request.api_key) < 10:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid API key"
-            )
-
         # Validate batch size
         if len(request.texts) > 10:
             raise HTTPException(

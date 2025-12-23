@@ -7,13 +7,11 @@ from datetime import datetime
 class TextAnalysisRequest(BaseModel):
     """Request model for text analysis"""
     text: str = Field(..., min_length=50, description="Text to analyze (minimum 50 characters)")
-    api_key: str = Field(..., description="Your API key")
 
     class Config:
         json_schema_extra = {
             "example": {
-                "text": "In today's digital age, it is important to note that artificial intelligence has revolutionized content creation...",
-                "api_key": "your_api_key_here"
+                "text": "In today's digital age, it is important to note that artificial intelligence has revolutionized content creation..."
             }
         }
 
@@ -21,7 +19,6 @@ class TextAnalysisRequest(BaseModel):
 class BatchAnalysisRequest(BaseModel):
     """Request model for batch analysis"""
     texts: list[str] = Field(..., max_length=10, description="List of texts to analyze (max 10)")
-    api_key: str = Field(..., description="Your API key")
 
     class Config:
         json_schema_extra = {
@@ -29,8 +26,7 @@ class BatchAnalysisRequest(BaseModel):
                 "texts": [
                     "First text to analyze...",
                     "Second text to analyze..."
-                ],
-                "api_key": "your_api_key_here"
+                ]
             }
         }
 
@@ -82,14 +78,3 @@ class HealthResponse(BaseModel):
     timestamp: str
 
 
-class PricingTier(BaseModel):
-    """Pricing tier information"""
-    requests_per_month: int | str
-    price: float | str
-    features: list[str]
-
-
-class PricingResponse(BaseModel):
-    """Pricing information response"""
-    status: str
-    pricing_tiers: Dict[str, PricingTier]

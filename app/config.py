@@ -24,11 +24,6 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    # Rate Limiting
-    RATE_LIMIT_FREE: int = 1000
-    RATE_LIMIT_STARTER: int = 10000
-    RATE_LIMIT_PRO: int = 100000
-
     # API Keys
     API_KEYS: str = '[]'  # JSON string of API keys
 

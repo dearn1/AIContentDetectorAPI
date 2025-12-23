@@ -13,14 +13,12 @@ load_dotenv()
 
 # Environment variable names
 API_KEYS_ENV = "API_KEYS"
-DEFAULT_RATE_LIMIT = 1000  # Default requests per day
 
 class APIKeyModel(BaseModel):
     """Model for API key configuration"""
     name: str
     key: str
     is_active: bool = True
-    rate_limit: int = DEFAULT_RATE_LIMIT
     expires_at: Optional[datetime] = None
     created_at: datetime = datetime.utcnow()
     
@@ -89,7 +87,6 @@ def save_api_keys_to_env():
             'key': key_data.key,
             'name': key_data.name,
             'is_active': key_data.is_active,
-            'rate_limit': key_data.rate_limit,
             'created_at': key_data.created_at.isoformat(),
             'expires_at': key_data.expires_at.isoformat() if key_data.expires_at else None
         }
@@ -97,13 +94,12 @@ def save_api_keys_to_env():
     ]
     os.environ[API_KEYS_ENV] = json.dumps(keys_data, default=str)
 
-def create_api_key(name: str, rate_limit: int = DEFAULT_RATE_LIMIT, days_valid: int = 365) -> APIKeyModel:
+def create_api_key(name: str, days_valid: int = 365) -> APIKeyModel:
     """Create and store a new API key"""
     key = generate_api_key()
     api_key = APIKeyModel(
         key=key,
         name=name,
-        rate_limit=rate_limit,
         expires_at=datetime.utcnow() + timedelta(days=days_valid)
     )
     API_KEYS[key] = api_key
@@ -153,71 +149,4 @@ async def validate_api_key(
             headers={"WWW-Authenticate": "API-Key"}
         )
     
-    # Check rate limiting
-    await check_rate_limit(api_key_obj)
-    
     return api_key_obj
-
-async def check_rate_limit(api_key: APIKeyModel) -> None:
-    """Check and update rate limiting for the API key"""
-    now = datetime.utcnow()
-    key = api_key.key
-    
-    # Initialize rate limit tracking for this key if not exists
-    if key not in RATE_LIMITS:
-        RATE_LIMITS[key] = {
-            'count': 0,
-            'reset_time': now + timedelta(hours=24),  # Daily limit
-            'daily_limit': api_key.rate_limit
-        }
-    
-    # Reset counter if a new day has started or if the rate limit has changed
-    if now > RATE_LIMITS[key]['reset_time'] or \
-       RATE_LIMITS[key]['daily_limit'] != api_key.rate_limit:
-        RATE_LIMITS[key] = {
-            'count': 0,
-            'reset_time': now + timedelta(hours=24),
-            'daily_limit': api_key.rate_limit
-        }
-    
-    # Check if rate limit exceeded
-    if RATE_LIMITS[key]['count'] >= RATE_LIMITS[key]['daily_limit']:
-        reset_time = RATE_LIMITS[key]['reset_time']
-        retry_after = int((reset_time - now).total_seconds())
-        
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail={
-                "error": "Rate limit exceeded",
-                "code": "rate_limit_exceeded",
-                "limit": RATE_LIMITS[key]['daily_limit'],
-                "remaining": 0,
-                "reset": reset_time.isoformat(),
-                "retry_after": retry_after,
-                "docs": "https://docs.yourapi.com/rate-limiting"
-            },
-            headers={
-                "X-RateLimit-Limit": str(RATE_LIMITS[key]['daily_limit']),
-                "X-RateLimit-Remaining": "0",
-                "X-RateLimit-Reset": str(int(reset_time.timestamp())),
-                "Retry-After": str(retry_after)
-            }
-        )
-    
-    # Increment request count
-    RATE_LIMITS[key]['count'] += 1
-
-def rate_limit(requests_per_minute: int = 60):
-    """
-    Decorator for endpoint-specific rate limiting
-    
-    Args:
-        requests_per_minute: Maximum number of requests allowed per minute
-    """
-    def decorator(func):
-        async def wrapper(*args, **kwargs):
-            # This is a simplified version. In production, consider using FastAPI-Limiter
-            # which integrates with Redis for distributed rate limiting
-            return await func(*args, **kwargs)
-        return wrapper
-    return decorator
